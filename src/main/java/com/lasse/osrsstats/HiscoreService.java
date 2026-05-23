@@ -1,8 +1,8 @@
 package com.lasse.osrsstats;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
-import org.springframework.cache.annotation.Cacheable;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -27,14 +27,18 @@ public class HiscoreService {
     // RestClient er Spring sitt verktøy for å gjøre HTTP-kall til andre tjenester.
     private final RestClient restClient = RestClient.create();
 
-    // Repository-et for å lagre snapshots. Spring sender det inn automatisk.
+    // Repository for å lagre snapshots, og service for å oppdage level-ups.
     private final SnapshotRepository snapshotRepository;
+    private final LevelUpService levelUpService;
 
-    public HiscoreService(SnapshotRepository snapshotRepository) {
+    public HiscoreService(SnapshotRepository snapshotRepository,
+                          LevelUpService levelUpService) {
         this.snapshotRepository = snapshotRepository;
+        this.levelUpService = levelUpService;
     }
 
-    // Henter stats fra Jagex (uten å lagre noe).
+    // Henter stats fra Jagex. Resultatet caches per spillernavn, så gjentatte
+    // forespørsler innen cachens levetid (10 min) ikke treffer Jagex på nytt.
     @Cacheable("playerStats")
     public PlayerStats getStats(String username) {
         try {
@@ -51,7 +55,8 @@ public class HiscoreService {
         }
     }
 
-    // Henter ferske stats OG lagrer et snapshot av total-XP i databasen.
+    // Henter ferske stats, lagrer et snapshot, og oppdager eventuelle level-ups.
+    // Det er denne scheduleren kaller.
     public PlayerStats getStatsAndSave(String username) {
         PlayerStats stats = getStats(username);
 
@@ -63,10 +68,21 @@ public class HiscoreService {
                     .orElse(null);
 
             if (overall != null) {
-                // Lagre en ny måling med nåtidspunktet
+                // Bygg en tekststreng med alle ferdighetsnivåer (unntatt Overall),
+                // f.eks. "Attack:80,Defence:75,Strength:85,..."
+                String skillLevels = stats.skills().stream()
+                        .filter(s -> !s.name().equals("Overall"))
+                        .map(s -> s.name() + ":" + s.level())
+                        .reduce((a, b) -> a + "," + b)
+                        .orElse("");
+
+                // Lagre snapshotet med nåtidspunktet
                 snapshotRepository.save(
-                        new Snapshot(username, overall.xp(), Instant.now())
+                        new Snapshot(username, overall.xp(), Instant.now(), skillLevels)
                 );
+
+                // Oppdag og lagre eventuelle level-ups (sammenligner mot forrige snapshot)
+                levelUpService.detectLevelUps(username, skillLevels);
             }
         }
         return stats;

@@ -16,14 +16,23 @@ public class Snapshot {
     private long totalXp;
     private Instant takenAt;   // når målingen ble gjort
 
+    // Lagrer alle ferdighetsnivåer som tekst, f.eks. "Attack:80,Strength:85,..."
+    // slik at vi senere kan sammenligne og oppdage level-ups.
+    @Column(length = 1000)
+    private String skillLevels;
+
     // JPA krever en tom konstruktør
     protected Snapshot() {}
 
-    public Snapshot(String username, long totalXp, Instant takenAt) {
+    public Snapshot(String username, long totalXp, Instant takenAt, String skillLevels) {
         this.username = username;
         this.totalXp = totalXp;
         this.takenAt = takenAt;
+        this.skillLevels = skillLevels;
     }
+
+    public String getSkillLevels() { return skillLevels; }
+
 
     // Getters (settes ikke etter opprettelse, så ingen setters nødvendig)
     public Long getId() { return id; }

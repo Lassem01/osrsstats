@@ -8,33 +8,42 @@ import java.util.List;
 @RequestMapping("/api")
 public class HiscoreController {
 
-    // De tre kontoene i gruppa. Vil dere legge til/endre, gjør dere det her.
+    // De tre kontoene i gruppa.
     private static final List<String> ACCOUNTS = List.of(
             "GIM Jostein", "LaksenGI", "MagickinderG"
     );
 
     private final HiscoreService service;
     private final LeaderboardService leaderboardService;
+    private final LevelUpRepository levelUpRepository;
 
-    // Spring gir oss begge tjenestene automatisk (dependency injection)
-    public HiscoreController(HiscoreService service, LeaderboardService leaderboardService) {
+    // Spring sender inn alle tre automatisk (dependency injection)
+    public HiscoreController(HiscoreService service,
+                             LeaderboardService leaderboardService,
+                             LevelUpRepository levelUpRepository) {
         this.service = service;
         this.leaderboardService = leaderboardService;
+        this.levelUpRepository = levelUpRepository;
     }
 
-    // GET /api/stats → henter ferske stats til visning (lagrer IKKE snapshot)
+    // GET /api/stats → henter ferske stats til visning (caches)
     @GetMapping("/stats")
     public List<PlayerStats> getAllStats() {
         return ACCOUNTS.stream()
-                .map(service::getStats)   // endret tilbake til getStats
+                .map(service::getStats)
                 .toList();
     }
 
-    // GET /api/leaderboard?days=7  → XP-gevinst per spiller de siste X dagene
-    // days=7 gir uke, days=30 gir måned. Hopper du over parameteren, brukes 7.
+    // GET /api/leaderboard?days=7 → XP-gevinst per spiller de siste X dagene
     @GetMapping("/leaderboard")
     public List<LeaderboardService.GainEntry> getLeaderboard(
             @RequestParam(defaultValue = "7") int days) {
         return leaderboardService.getLeaderboard(ACCOUNTS, days);
+    }
+
+    // GET /api/activity → de 5 siste level-up-hendelsene
+    @GetMapping("/activity")
+    public List<LevelUpEvent> getActivity() {
+        return levelUpRepository.findTop5ByOrderByHappenedAtDesc();
     }
 }

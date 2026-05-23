@@ -157,6 +157,47 @@
             text-align: center;
         }
 
+        /* ---- Aktivitetslogg ---- */
+        .activity {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 22px 26px;
+            margin-bottom: 36px;
+            box-shadow: 0 8px 24px -12px rgba(0,0,0,0.6);
+        }
+        .activity-title {
+            font-family: 'Cinzel', serif;
+            font-weight: 700;
+            font-size: 1.3rem;
+            color: var(--gold-bright);
+            margin-bottom: 16px;
+        }
+        .act-rows { display: flex; flex-direction: column; gap: 8px; }
+        .act-row {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 10px 14px;
+            background: var(--panel-light);
+            border: 1px solid var(--border);
+            border-left: 4px solid var(--gold);
+            border-radius: 6px;
+            font-size: 0.95rem;
+        }
+        .act-icon { font-size: 1.1rem; flex-shrink: 0; }
+        .act-text { flex: 1; }
+        .act-text strong { color: var(--gold-bright); }
+        .act-text .skill { color: #b6e6b6; font-weight: 600; }
+        .act-time { color: var(--text-dim); font-size: 0.82rem; white-space: nowrap; }
+        .act-empty {
+            color: var(--text-dim);
+            font-style: italic;
+            text-align: center;
+            padding: 20px;
+            font-size: 0.92rem;
+        }
+
         /* ---- Spillerkort ---- */
         .cards {
             display: grid;
@@ -234,7 +275,6 @@
     <h1>Mattox</h1>
     <div class="badge-gim">⚔ Group Ironman</div>
     <div class="controls">
-        <button onclick="refreshAll()">↻ Oppdater</button>
         <span class="updated" id="updated"></span>
     </div>
 </header>
@@ -253,8 +293,16 @@
             <div class="loading" style="padding: 30px;">Laster...</div>
         </div>
         <div class="lb-note">
-            Stats lagres automatisk én gang i døgnet. XP-gevinsten regnes ut fra
-            disse daglige målingene og blir mer presis etter hvert som dagene går.
+            Stats hentes automatisk hver 6. time. XP-gevinsten regnes ut fra disse
+            målingene og blir mer presis etter hvert som dagene går.
+        </div>
+    </div>
+
+    <!-- Aktivitetslogg: de 5 siste level-ups -->
+    <div class="activity">
+        <div class="activity-title">📜 Siste hendelser</div>
+        <div class="act-rows" id="actRows">
+            <div class="act-empty">Laster...</div>
         </div>
     </div>
 
@@ -266,18 +314,57 @@
 <script>
     const STATS_API = '/api/stats';
     const LB_API = '/api/leaderboard';
+    const ACTIVITY_API = '/api/activity';
     let currentDays = 7;
 
     document.addEventListener('DOMContentLoaded', () => {
         loadStats();
         loadLeaderboard();
+        loadActivity();
     });
 
-    // Trykk på "Hent ferske tall" → henter live-stats til visning og oppdaterer
-    // leaderboardet. Selve historikken lagres av den daglige jobben i backend.
-    async function refreshAll() {
-        await loadStats();
-        await loadLeaderboard();
+    // Henter de 5 siste level-up-hendelsene og viser dem i aktivitetsboksen.
+    async function loadActivity() {
+        const rows = document.getElementById('actRows');
+        try {
+            const res = await fetch(ACTIVITY_API);
+            if (!res.ok) throw new Error('Kunne ikke hente hendelser');
+            const events = await res.json();
+            renderActivity(events);
+        } catch (err) {
+            rows.innerHTML = `<div class="act-empty">Feil: ${err.message}</div>`;
+        }
+    }
+
+    function renderActivity(events) {
+        const rows = document.getElementById('actRows');
+        if (!events.length) {
+            rows.innerHTML = '<div class="act-empty">Ingen hendelser ennå. ' +
+                'Når noen i gruppa går opp et nivå, dukker det opp her.</div>';
+            return;
+        }
+        rows.innerHTML = events.map(e => `
+      <div class="act-row">
+        <span class="act-icon">⬆️</span>
+        <span class="act-text">
+          <strong>${escapeHtml(e.username)}</strong> nådde nivå
+          ${e.newLevel} i <span class="skill">${escapeHtml(e.skill)}</span>
+        </span>
+        <span class="act-time">${formatTime(e.happenedAt)}</span>
+      </div>
+    `).join('');
+    }
+
+    // Gjør et tidsstempel om til noe lesbart, f.eks. "for 2 timer siden"
+    function formatTime(iso) {
+        const then = new Date(iso);
+        const diffMin = Math.floor((Date.now() - then.getTime()) / 60000);
+        if (diffMin < 1) return 'nå nettopp';
+        if (diffMin < 60) return `for ${diffMin} min siden`;
+        const diffH = Math.floor(diffMin / 60);
+        if (diffH < 24) return `for ${diffH} t siden`;
+        const diffD = Math.floor(diffH / 24);
+        return `for ${diffD} d siden`;
     }
 
     async function loadStats() {

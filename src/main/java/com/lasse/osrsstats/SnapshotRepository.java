@@ -14,4 +14,6 @@ public interface SnapshotRepository extends JpaRepository<Snapshot, Long> {
     // (altså: den første målingen innenfor uka/måneden – vårt "før"-punkt)
     Optional<Snapshot> findFirstByUsernameAndTakenAtAfterOrderByTakenAtAsc(
             String username, Instant after);
+    // Henter de to nyeste snapshotene for en spiller (til level-up-sammenligning)
+    List<Snapshot> findTop2ByUsernameOrderByTakenAtDesc(String username);
 }

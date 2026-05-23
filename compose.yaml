@@ -1,8 +1,6 @@
-# Starter en PostgreSQL-database for osrsstats.
-# Kjør med:  docker compose up -d
-# Stopp med: docker compose down
-#
-# Appen kjøres fortsatt fra IntelliJ – kun databasen kjører i Docker her.
+# Kjører HELE Mattox: både appen og databasen i Docker.
+# Start alt med:  docker compose up --build
+# Stopp med:      docker compose down
 
 services:
   db:
@@ -12,12 +10,30 @@ services:
       POSTGRES_DB: osrsstats
       POSTGRES_USER: osrs
       POSTGRES_PASSWORD: osrs
-    ports:
-      # Koble databasens port ut til maskinen din, så appen (i IntelliJ) når den
-      - "5432:5432"
     volumes:
-      # Lagrer databasefilene utenfor containeren, så dataene overlever omstart
       - osrs-db-data:/var/lib/postgresql/data
+    restart: unless-stopped
+    # Healthcheck: app-en venter til databasen faktisk er klar
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U osrs -d osrsstats"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build: .
+    container_name: osrsstats-app
+    ports:
+      - "8080:8080"
+    environment:
+      # MERK: host er "db" (tjenestenavnet), ikke localhost.
+      # Inne i Docker-nettverket når app-en databasen via tjenestenavnet.
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/osrsstats
+      SPRING_DATASOURCE_USERNAME: osrs
+      SPRING_DATASOURCE_PASSWORD: osrs
+    depends_on:
+      db:
+        condition: service_healthy   # vent til db er klar før app starter
     restart: unless-stopped
 
 volumes:

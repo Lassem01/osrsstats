@@ -1,0 +1,24 @@
+# Starter en PostgreSQL-database for osrsstats.
+# Kjør med:  docker compose up -d
+# Stopp med: docker compose down
+#
+# Appen kjøres fortsatt fra IntelliJ – kun databasen kjører i Docker her.
+
+services:
+  db:
+    image: postgres:16
+    container_name: osrsstats-db
+    environment:
+      POSTGRES_DB: osrsstats
+      POSTGRES_USER: osrs
+      POSTGRES_PASSWORD: osrs
+    ports:
+      # Koble databasens port ut til maskinen din, så appen (i IntelliJ) når den
+      - "5432:5432"
+    volumes:
+      # Lagrer databasefilene utenfor containeren, så dataene overlever omstart
+      - osrs-db-data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  osrs-db-data:

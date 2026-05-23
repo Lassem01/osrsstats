@@ -234,7 +234,7 @@
     <h1>Mattox</h1>
     <div class="badge-gim">⚔ Group Ironman</div>
     <div class="controls">
-        <button onclick="refreshAll()">↻ Oppdater stats</button>
+        <button onclick="refreshAll()">↻ Oppdater</button>
         <span class="updated" id="updated"></span>
     </div>
 </header>
@@ -245,7 +245,7 @@
         <div class="lb-head">
             <div class="lb-title">🏆 XP-leaderboard</div>
             <div class="lb-tabs">
-                <button class="lb-tab active" data-days="7" onclick="setPeriod(7, this)">Denne uka</button>
+                <button class="lb-tab active" data-days="7" onclick="setPeriod(7, this)">Denne uken</button>
                 <button class="lb-tab" data-days="30" onclick="setPeriod(30, this)">Denne måneden</button>
             </div>
         </div>
@@ -253,8 +253,8 @@
             <div class="loading" style="padding: 30px;">Laster...</div>
         </div>
         <div class="lb-note">
-            XP-gevinst regnes ut fra lagrede målinger. Trykk «Oppdater stats» jevnlig
-            for å bygge opp historikk – tallene blir mer presise over tid.
+            Stats lagres automatisk én gang i døgnet. XP-gevinsten regnes ut fra
+            disse daglige målingene og blir mer presis etter hvert som dagene går.
         </div>
     </div>
 
@@ -273,8 +273,8 @@
         loadLeaderboard();
     });
 
-    // Trykk på "Oppdater stats" → henter ferske stats (som også lagrer snapshots),
-    // og oppdaterer deretter leaderboardet.
+    // Trykk på "Hent ferske tall" → henter live-stats til visning og oppdaterer
+    // leaderboardet. Selve historikken lagres av den daglige jobben i backend.
     async function refreshAll() {
         await loadStats();
         await loadLeaderboard();

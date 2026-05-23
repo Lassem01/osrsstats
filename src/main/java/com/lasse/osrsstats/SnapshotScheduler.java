@@ -19,14 +19,18 @@ public class SnapshotScheduler {
         this.service = service;
     }
 
-    // Kjører automatisk hver dag kl. 04:00.
-    // cron-formatet er: sekund minutt time dag måned ukedag
-    // "0 0 4 * * *" = ved sekund 0, minutt 0, time 4, hver dag.
-    @Scheduled(cron = "0 0 1 * * *")
+    // Kjører hver 6. time: kl. 00:00, 06:00, 12:00 og 18:00.
+    @Scheduled(cron = "0 0 0,6,12,18 * * *")
     public void takeDailySnapshot() {
         for (String account : ACCOUNTS) {
             service.getStatsAndSave(account);
         }
         System.out.println("Daglig snapshot lagret for " + ACCOUNTS.size() + " kontoer.");
+    }
+    @org.springframework.cache.annotation.CacheEvict(value = "playerStats", allEntries = true)
+    @Scheduled(fixedRate = 600000)   // 600000 ms = 10 minutter
+    public void clearStatsCache() {
+        // Tom metode – annotasjonene gjør jobben.
+        // Tømmer cachen så ferske tall hentes ved neste forespørsel.
     }
 }

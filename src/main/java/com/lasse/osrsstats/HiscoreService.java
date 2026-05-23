@@ -2,6 +2,7 @@ package com.lasse.osrsstats;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
+import org.springframework.cache.annotation.Cacheable;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -34,6 +35,7 @@ public class HiscoreService {
     }
 
     // Henter stats fra Jagex (uten å lagre noe).
+    @Cacheable("playerStats")
     public PlayerStats getStats(String username) {
         try {
             String body = restClient.get()

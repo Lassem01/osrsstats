@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mattox – Group Ironman</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #1a1612;
+            --panel: #2a2218;
+            --panel-light: #342a1d;
+            --border: #4a3c28;
+            --gold: #d4af37;
+            --gold-bright: #ffd700;
+            --text: #e8dcc8;
+            --text-dim: #9a8d76;
+            --leader: #3a5a3a;
+            --leader-glow: rgba(120, 200, 120, 0.25);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: var(--bg);
+            background-image:
+                    radial-gradient(circle at 30% 10%, rgba(212,175,55,0.06) 0%, transparent 50%),
+                    radial-gradient(circle at 70% 90%, rgba(212,175,55,0.04) 0%, transparent 50%);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 0 0 60px;
+        }
+
+        header {
+            text-align: center;
+            padding: 44px 20px 28px;
+            border-bottom: 1px solid var(--border);
+        }
+        h1 {
+            font-family: 'Cinzel', serif;
+            font-weight: 900;
+            font-size: clamp(1.9rem, 5vw, 3rem);
+            color: var(--gold);
+            letter-spacing: 0.02em;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+        }
+        .subtitle {
+            color: var(--text-dim);
+            margin-top: 8px;
+            font-size: 1rem;
+        }
+        .controls {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            align-items: center;
+            margin-top: 18px;
+            flex-wrap: wrap;
+        }
+        button {
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            background: var(--panel-light);
+            color: var(--gold);
+            border: 1px solid var(--border);
+            padding: 9px 20px;
+            border-radius: 6px;
+            font-size: 0.92rem;
+            font-weight: 600;
+            transition: background 0.2s, border-color 0.2s;
+        }
+        button:hover { background: var(--border); border-color: var(--gold); }
+        .updated { color: var(--text-dim); font-size: 0.85rem; }
+
+        .wrap {
+            max-width: 1280px;
+            margin: 32px auto 0;
+            padding: 0 20px;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 8px 24px -12px rgba(0,0,0,0.6);
+        }
+        .card-head {
+            background: var(--panel-light);
+            padding: 18px 20px;
+            border-bottom: 2px solid var(--gold);
+        }
+        .card-name {
+            font-family: 'Cinzel', serif;
+            font-weight: 700;
+            font-size: 1.25rem;
+            color: var(--gold-bright);
+        }
+        .card-total {
+            color: var(--text-dim);
+            font-size: 0.9rem;
+            margin-top: 2px;
+        }
+        .card-total strong { color: var(--text); font-size: 1.05rem; }
+
+        .skills {
+            padding: 8px 0;
+        }
+        .skill-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 7px 20px;
+            font-size: 0.9rem;
+            border-bottom: 1px solid rgba(74,60,40,0.3);
+        }
+        .skill-row:last-child { border-bottom: none; }
+        .skill-name { color: var(--text-dim); }
+        .skill-level {
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        /* markering av den som leder i en ferdighet */
+        .skill-row.leader {
+            background: linear-gradient(90deg, var(--leader-glow), transparent);
+        }
+        .skill-row.leader .skill-level { color: #b6e6b6; }
+        .crown { font-size: 0.85rem; }
+
+        .error {
+            padding: 30px 20px;
+            text-align: center;
+            color: #d88;
+            font-size: 0.9rem;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 80px 20px;
+            color: var(--text-dim);
+            font-size: 1.1rem;
+        }
+
+        .total-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 20px;
+            background: rgba(212,175,55,0.06);
+            font-weight: 700;
+        }
+        .total-row.leader { background: linear-gradient(90deg, var(--leader-glow), transparent); }
+        .total-row .skill-name { color: var(--gold); }
+    </style>
+</head>
+<body>
+<header>
+    <h1>Mattox</h1>
+    <p class="subtitle">Group Ironman · alle kontoene på ett sted</p>
+    <div class="controls">
+        <button onclick="loadStats()">↻ Oppdater</button>
+        <span class="updated" id="updated"></span>
+    </div>
+</header>
+
+<div class="wrap">
+    <div id="content" class="loading">Henter stats...</div>
+</div>
+
+<script>
+    const API = '/api/stats';
+
+    document.addEventListener('DOMContentLoaded', loadStats);
+
+    async function loadStats() {
+        const content = document.getElementById('content');
+        content.className = 'loading';
+        content.innerHTML = 'Henter stats...';
+
+        try {
+            const res = await fetch(API);
+            if (!res.ok) throw new Error('Kunne ikke hente stats');
+            const players = await res.json();
+            render(players);
+            document.getElementById('updated').textContent =
+                'Oppdatert ' + new Date().toLocaleTimeString('no-NO');
+        } catch (err) {
+            content.className = 'error';
+            content.innerHTML = 'Feil ved henting: ' + err.message;
+        }
+    }
+
+    function render(players) {
+        const content = document.getElementById('content');
+
+        // Finn ut hvem som leder i hver ferdighet.
+        // leaders[skillName] = høyeste nivå funnet (ev. høyest xp ved likt nivå)
+        const leaders = {};
+        players.forEach(p => {
+            if (!p.found) return;
+            p.skills.forEach(s => {
+                const best = leaders[s.name];
+                if (!best || s.level > best.level || (s.level === best.level && s.xp > best.xp)) {
+                    leaders[s.name] = { level: s.level, xp: s.xp, player: p.username };
+                }
+            });
+        });
+
+        content.className = '';
+        content.innerHTML = '<div class="cards">' +
+            players.map(p => card(p, leaders)).join('') +
+            '</div>';
+    }
+
+    function card(p, leaders) {
+        if (!p.found) {
+            return `
+        <div class="card">
+          <div class="card-head">
+            <div class="card-name">${escapeHtml(p.username)}</div>
+          </div>
+          <div class="error">Fant ingen stats for denne kontoen.<br>
+            Sjekk at navnet er skrevet riktig.</div>
+        </div>
+      `;
+        }
+
+        // Første ferdighet er "Overall" (totalnivå) — vi viser den øverst som egen rad
+        const overall = p.skills.find(s => s.name === 'Overall');
+        const rest = p.skills.filter(s => s.name !== 'Overall');
+
+        const overallLeader = leaders['Overall'] && leaders['Overall'].player === p.username;
+
+        const rows = rest.map(s => {
+            const isLeader = leaders[s.name] && leaders[s.name].player === p.username;
+            return `
+        <div class="skill-row ${isLeader ? 'leader' : ''}">
+          <span class="skill-name">${s.name}</span>
+          <span class="skill-level">
+            ${isLeader ? '<span class="crown">👑</span>' : ''}
+            ${s.level}
+          </span>
+        </div>
+      `;
+        }).join('');
+
+        return `
+      <div class="card">
+        <div class="card-head">
+          <div class="card-name">${escapeHtml(p.username)}</div>
+          <div class="card-total">Totalnivå: <strong>${overall ? overall.level : '–'}</strong></div>
+        </div>
+        <div class="total-row ${overallLeader ? 'leader' : ''}">
+          <span class="skill-name">Total XP</span>
+          <span class="skill-level">
+            ${overallLeader ? '<span class="crown">👑</span>' : ''}
+            ${overall ? overall.xp.toLocaleString('no-NO') : '–'}
+          </span>
+        </div>
+        <div class="skills">${rows}</div>
+      </div>
+    `;
+    }
+
+    function escapeHtml(str) {
+        const div = document.createElement('div');
+        div.textContent = str;
+        return div.innerHTML;
+    }
+</script>
+</body>
+</html>

@@ -22,11 +22,11 @@ public class HiscoreController {
         this.leaderboardService = leaderboardService;
     }
 
-    // GET /api/stats → henter stats for alle kontoene OG lagrer et snapshot for hver
+    // GET /api/stats → henter ferske stats til visning (lagrer IKKE snapshot)
     @GetMapping("/stats")
     public List<PlayerStats> getAllStats() {
         return ACCOUNTS.stream()
-                .map(service::getStatsAndSave)
+                .map(service::getStats)   // endret tilbake til getStats
                 .toList();
     }
 

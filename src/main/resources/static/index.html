@@ -42,15 +42,22 @@
         h1 {
             font-family: 'Cinzel', serif;
             font-weight: 900;
-            font-size: clamp(1.9rem, 5vw, 3rem);
+            font-size: clamp(2.2rem, 6vw, 3.4rem);
             color: var(--gold);
-            letter-spacing: 0.02em;
+            letter-spacing: 0.04em;
             text-shadow: 0 2px 8px rgba(0,0,0,0.5);
         }
-        .subtitle {
-            color: var(--text-dim);
-            margin-top: 8px;
-            font-size: 1rem;
+        .badge-gim {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 4px 14px;
+            border: 1px solid var(--gold);
+            border-radius: 20px;
+            color: var(--gold);
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
         }
         .controls {
             display: flex;
@@ -81,12 +88,81 @@
             padding: 0 20px;
         }
 
+        /* ---- Leaderboard ---- */
+        .leaderboard {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 26px 28px;
+            margin-bottom: 36px;
+            box-shadow: 0 8px 24px -12px rgba(0,0,0,0.6);
+        }
+        .lb-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 14px;
+            margin-bottom: 20px;
+        }
+        .lb-title {
+            font-family: 'Cinzel', serif;
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--gold-bright);
+        }
+        .lb-tabs { display: flex; gap: 8px; }
+        .lb-tab {
+            padding: 7px 16px;
+            font-size: 0.88rem;
+        }
+        .lb-tab.active {
+            background: var(--gold);
+            color: var(--bg);
+            border-color: var(--gold);
+        }
+        .lb-rows { display: flex; flex-direction: column; gap: 10px; }
+        .lb-row {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            background: var(--panel-light);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 14px 18px;
+        }
+        .lb-rank {
+            font-family: 'Cinzel', serif;
+            font-weight: 700;
+            font-size: 1.3rem;
+            width: 32px;
+            text-align: center;
+            color: var(--text-dim);
+        }
+        .lb-row.first .lb-rank { color: var(--gold-bright); }
+        .lb-row.first { border-color: var(--gold); box-shadow: 0 0 0 1px var(--gold) inset; }
+        .lb-name { flex: 1; font-weight: 600; font-size: 1.05rem; }
+        .lb-xp {
+            font-variant-numeric: tabular-nums;
+            font-weight: 700;
+            color: #b6e6b6;
+            font-size: 1.05rem;
+        }
+        .lb-xp.zero { color: var(--text-dim); font-weight: 500; }
+        .lb-note {
+            margin-top: 16px;
+            color: var(--text-dim);
+            font-size: 0.85rem;
+            font-style: italic;
+            text-align: center;
+        }
+
+        /* ---- Spillerkort ---- */
         .cards {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 20px;
         }
-
         .card {
             background: var(--panel);
             border: 1px solid var(--border);
@@ -105,16 +181,10 @@
             font-size: 1.25rem;
             color: var(--gold-bright);
         }
-        .card-total {
-            color: var(--text-dim);
-            font-size: 0.9rem;
-            margin-top: 2px;
-        }
+        .card-total { color: var(--text-dim); font-size: 0.9rem; margin-top: 2px; }
         .card-total strong { color: var(--text); font-size: 1.05rem; }
 
-        .skills {
-            padding: 8px 0;
-        }
+        .skills { padding: 8px 0; }
         .skill-row {
             display: flex;
             align-items: center;
@@ -133,26 +203,9 @@
             align-items: center;
             gap: 6px;
         }
-        /* markering av den som leder i en ferdighet */
-        .skill-row.leader {
-            background: linear-gradient(90deg, var(--leader-glow), transparent);
-        }
+        .skill-row.leader { background: linear-gradient(90deg, var(--leader-glow), transparent); }
         .skill-row.leader .skill-level { color: #b6e6b6; }
         .crown { font-size: 0.85rem; }
-
-        .error {
-            padding: 30px 20px;
-            text-align: center;
-            color: #d88;
-            font-size: 0.9rem;
-        }
-
-        .loading {
-            text-align: center;
-            padding: 80px 20px;
-            color: var(--text-dim);
-            font-size: 1.1rem;
-        }
 
         .total-row {
             display: flex;
@@ -164,37 +217,78 @@
         }
         .total-row.leader { background: linear-gradient(90deg, var(--leader-glow), transparent); }
         .total-row .skill-name { color: var(--gold); }
+
+        .error { padding: 30px 20px; text-align: center; color: #d88; font-size: 0.9rem; }
+        .loading { text-align: center; padding: 80px 20px; color: var(--text-dim); font-size: 1.1rem; }
+
+        .section-label {
+            font-family: 'Cinzel', serif;
+            font-size: 1.5rem;
+            color: var(--gold);
+            margin: 0 0 18px;
+        }
     </style>
 </head>
 <body>
 <header>
     <h1>Mattox</h1>
-    <p class="subtitle">Group Ironman · alle kontoene på ett sted</p>
+    <div class="badge-gim">⚔ Group Ironman</div>
     <div class="controls">
-        <button onclick="loadStats()">↻ Oppdater</button>
+        <button onclick="refreshAll()">↻ Oppdater stats</button>
         <span class="updated" id="updated"></span>
     </div>
 </header>
 
 <div class="wrap">
+    <!-- Leaderboard -->
+    <div class="leaderboard">
+        <div class="lb-head">
+            <div class="lb-title">🏆 XP-leaderboard</div>
+            <div class="lb-tabs">
+                <button class="lb-tab active" data-days="7" onclick="setPeriod(7, this)">Denne uka</button>
+                <button class="lb-tab" data-days="30" onclick="setPeriod(30, this)">Denne måneden</button>
+            </div>
+        </div>
+        <div class="lb-rows" id="lbRows">
+            <div class="loading" style="padding: 30px;">Laster...</div>
+        </div>
+        <div class="lb-note">
+            XP-gevinst regnes ut fra lagrede målinger. Trykk «Oppdater stats» jevnlig
+            for å bygge opp historikk – tallene blir mer presise over tid.
+        </div>
+    </div>
+
+    <!-- Spillerkort -->
+    <h2 class="section-label">Stats</h2>
     <div id="content" class="loading">Henter stats...</div>
 </div>
 
 <script>
-    const API = '/api/stats';
+    const STATS_API = '/api/stats';
+    const LB_API = '/api/leaderboard';
+    let currentDays = 7;
 
-    document.addEventListener('DOMContentLoaded', loadStats);
+    document.addEventListener('DOMContentLoaded', () => {
+        loadStats();
+        loadLeaderboard();
+    });
+
+    // Trykk på "Oppdater stats" → henter ferske stats (som også lagrer snapshots),
+    // og oppdaterer deretter leaderboardet.
+    async function refreshAll() {
+        await loadStats();
+        await loadLeaderboard();
+    }
 
     async function loadStats() {
         const content = document.getElementById('content');
         content.className = 'loading';
         content.innerHTML = 'Henter stats...';
-
         try {
-            const res = await fetch(API);
+            const res = await fetch(STATS_API);
             if (!res.ok) throw new Error('Kunne ikke hente stats');
             const players = await res.json();
-            render(players);
+            renderCards(players);
             document.getElementById('updated').textContent =
                 'Oppdatert ' + new Date().toLocaleTimeString('no-NO');
         } catch (err) {
@@ -203,11 +297,46 @@
         }
     }
 
-    function render(players) {
+    async function loadLeaderboard() {
+        const rows = document.getElementById('lbRows');
+        try {
+            const res = await fetch(`${LB_API}?days=${currentDays}`);
+            if (!res.ok) throw new Error('Kunne ikke hente leaderboard');
+            const entries = await res.json();
+            renderLeaderboard(entries);
+        } catch (err) {
+            rows.innerHTML = `<div class="error">Feil: ${err.message}</div>`;
+        }
+    }
+
+    function setPeriod(days, btn) {
+        currentDays = days;
+        document.querySelectorAll('.lb-tab').forEach(t => t.classList.remove('active'));
+        btn.classList.add('active');
+        loadLeaderboard();
+    }
+
+    function renderLeaderboard(entries) {
+        const rows = document.getElementById('lbRows');
+        if (!entries.length) {
+            rows.innerHTML = '<div class="error">Ingen data ennå.</div>';
+            return;
+        }
+        rows.innerHTML = entries.map((e, i) => `
+      <div class="lb-row ${i === 0 && e.xpGained > 0 ? 'first' : ''}">
+        <div class="lb-rank">${i + 1}</div>
+        <div class="lb-name">${escapeHtml(e.username)}</div>
+        <div class="lb-xp ${e.xpGained === 0 ? 'zero' : ''}">
+          ${e.xpGained > 0 ? '+' : ''}${e.xpGained.toLocaleString('no-NO')} XP
+        </div>
+      </div>
+    `).join('');
+    }
+
+    function renderCards(players) {
         const content = document.getElementById('content');
 
-        // Finn ut hvem som leder i hver ferdighet.
-        // leaders[skillName] = høyeste nivå funnet (ev. høyest xp ved likt nivå)
+        // Finn hvem som leder i hver ferdighet
         const leaders = {};
         players.forEach(p => {
             if (!p.found) return;
@@ -221,27 +350,20 @@
 
         content.className = '';
         content.innerHTML = '<div class="cards">' +
-            players.map(p => card(p, leaders)).join('') +
-            '</div>';
+            players.map(p => card(p, leaders)).join('') + '</div>';
     }
 
     function card(p, leaders) {
         if (!p.found) {
             return `
         <div class="card">
-          <div class="card-head">
-            <div class="card-name">${escapeHtml(p.username)}</div>
-          </div>
-          <div class="error">Fant ingen stats for denne kontoen.<br>
-            Sjekk at navnet er skrevet riktig.</div>
-        </div>
-      `;
+          <div class="card-head"><div class="card-name">${escapeHtml(p.username)}</div></div>
+          <div class="error">Fant ingen stats for denne kontoen.<br>Sjekk at navnet er riktig.</div>
+        </div>`;
         }
 
-        // Første ferdighet er "Overall" (totalnivå) — vi viser den øverst som egen rad
         const overall = p.skills.find(s => s.name === 'Overall');
         const rest = p.skills.filter(s => s.name !== 'Overall');
-
         const overallLeader = leaders['Overall'] && leaders['Overall'].player === p.username;
 
         const rows = rest.map(s => {
@@ -249,12 +371,8 @@
             return `
         <div class="skill-row ${isLeader ? 'leader' : ''}">
           <span class="skill-name">${s.name}</span>
-          <span class="skill-level">
-            ${isLeader ? '<span class="crown">👑</span>' : ''}
-            ${s.level}
-          </span>
-        </div>
-      `;
+          <span class="skill-level">${isLeader ? '<span class="crown">👑</span>' : ''}${s.level}</span>
+        </div>`;
         }).join('');
 
         return `
@@ -265,14 +383,10 @@
         </div>
         <div class="total-row ${overallLeader ? 'leader' : ''}">
           <span class="skill-name">Total XP</span>
-          <span class="skill-level">
-            ${overallLeader ? '<span class="crown">👑</span>' : ''}
-            ${overall ? overall.xp.toLocaleString('no-NO') : '–'}
-          </span>
+          <span class="skill-level">${overallLeader ? '<span class="crown">👑</span>' : ''}${overall ? overall.xp.toLocaleString('no-NO') : '–'}</span>
         </div>
         <div class="skills">${rows}</div>
-      </div>
-    `;
+      </div>`;
     }
 
     function escapeHtml(str) {

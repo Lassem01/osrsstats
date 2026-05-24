@@ -17,7 +17,6 @@
             --gold-bright: #ffd700;
             --text: #e8dcc8;
             --text-dim: #9a8d76;
-            --leader: #3a5a3a;
             --leader-glow: rgba(120, 200, 120, 0.25);
         }
 
@@ -36,8 +35,7 @@
 
         header {
             text-align: center;
-            padding: 44px 20px 28px;
-            border-bottom: 1px solid var(--border);
+            padding: 44px 20px 20px;
         }
         h1 {
             font-family: 'Cinzel', serif;
@@ -64,7 +62,7 @@
             gap: 12px;
             justify-content: center;
             align-items: center;
-            margin-top: 18px;
+            margin-top: 16px;
             flex-wrap: wrap;
         }
         button {
@@ -83,11 +81,39 @@
         button:disabled { opacity: 0.6; cursor: default; }
         .updated { color: var(--text-dim); font-size: 0.85rem; }
 
-        .wrap {
-            max-width: 1280px;
-            margin: 32px auto 0;
-            padding: 0 20px;
+        /* ---- Tabs ---- */
+        .tabs {
+            display: flex;
+            justify-content: center;
+            gap: 4px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 32px;
+            flex-wrap: wrap;
+            padding: 0 16px;
         }
+        .tab {
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            border-radius: 0;
+            color: var(--text-dim);
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+            font-weight: 700;
+            padding: 14px 22px;
+            margin-bottom: -1px;
+        }
+        .tab:hover { background: none; color: var(--text); }
+        .tab.active {
+            color: var(--gold-bright);
+            border-bottom-color: var(--gold);
+        }
+
+        .wrap { max-width: 1280px; margin: 0 auto; padding: 0 20px; }
+
+        /* Tab-innhold: kun aktiv vises */
+        .panel { display: none; }
+        .panel.active { display: block; }
 
         /* ---- Leaderboard ---- */
         .leaderboard {
@@ -95,177 +121,124 @@
             border: 1px solid var(--border);
             border-radius: 12px;
             padding: 26px 28px;
-            margin-bottom: 36px;
             box-shadow: 0 8px 24px -12px rgba(0,0,0,0.6);
         }
         .lb-head {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 14px;
-            margin-bottom: 20px;
+            display: flex; align-items: center; justify-content: space-between;
+            flex-wrap: wrap; gap: 14px; margin-bottom: 20px;
         }
         .lb-title {
-            font-family: 'Cinzel', serif;
-            font-weight: 700;
-            font-size: 1.5rem;
-            color: var(--gold-bright);
+            font-family: 'Cinzel', serif; font-weight: 700;
+            font-size: 1.5rem; color: var(--gold-bright);
         }
         .lb-tabs { display: flex; gap: 8px; }
         .lb-tab { padding: 7px 16px; font-size: 0.88rem; }
-        .lb-tab.active {
-            background: var(--gold);
-            color: var(--bg);
-            border-color: var(--gold);
-        }
+        .lb-tab.active { background: var(--gold); color: var(--bg); border-color: var(--gold); }
         .lb-rows { display: flex; flex-direction: column; gap: 10px; }
         .lb-row {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            background: var(--panel-light);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 14px 18px;
+            display: flex; align-items: center; gap: 16px;
+            background: var(--panel-light); border: 1px solid var(--border);
+            border-radius: 8px; padding: 14px 18px;
         }
         .lb-rank {
-            font-family: 'Cinzel', serif;
-            font-weight: 700;
-            font-size: 1.3rem;
-            width: 32px;
-            text-align: center;
-            color: var(--text-dim);
+            font-family: 'Cinzel', serif; font-weight: 700; font-size: 1.3rem;
+            width: 32px; text-align: center; color: var(--text-dim);
         }
         .lb-row.first .lb-rank { color: var(--gold-bright); }
         .lb-row.first { border-color: var(--gold); box-shadow: 0 0 0 1px var(--gold) inset; }
         .lb-name { flex: 1; font-weight: 600; font-size: 1.05rem; }
-        .lb-xp {
-            font-variant-numeric: tabular-nums;
-            font-weight: 700;
-            color: #b6e6b6;
-            font-size: 1.05rem;
-        }
+        .lb-xp { font-variant-numeric: tabular-nums; font-weight: 700; color: #b6e6b6; font-size: 1.05rem; }
         .lb-xp.zero { color: var(--text-dim); font-weight: 500; }
-        .lb-note {
-            margin-top: 16px;
-            color: var(--text-dim);
-            font-size: 0.85rem;
-            font-style: italic;
-            text-align: center;
-        }
+        .lb-note { margin-top: 16px; color: var(--text-dim); font-size: 0.85rem; font-style: italic; text-align: center; }
 
         /* ---- Aktivitetslogg ---- */
         .activity {
-            background: var(--panel);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 22px 26px;
-            margin-bottom: 36px;
+            background: var(--panel); border: 1px solid var(--border);
+            border-radius: 12px; padding: 22px 26px;
             box-shadow: 0 8px 24px -12px rgba(0,0,0,0.6);
         }
-        .activity-title {
-            font-family: 'Cinzel', serif;
-            font-weight: 700;
-            font-size: 1.3rem;
-            color: var(--gold-bright);
-            margin-bottom: 16px;
-        }
+        .activity-title { font-family: 'Cinzel', serif; font-weight: 700; font-size: 1.3rem; color: var(--gold-bright); margin-bottom: 16px; }
         .act-rows { display: flex; flex-direction: column; gap: 8px; }
         .act-row {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            padding: 10px 14px;
-            background: var(--panel-light);
-            border: 1px solid var(--border);
-            border-left: 4px solid var(--gold);
-            border-radius: 6px;
-            font-size: 0.95rem;
+            display: flex; align-items: center; gap: 14px; padding: 10px 14px;
+            background: var(--panel-light); border: 1px solid var(--border);
+            border-left: 4px solid var(--gold); border-radius: 6px; font-size: 0.95rem;
         }
         .act-icon { font-size: 1.1rem; flex-shrink: 0; }
         .act-text { flex: 1; }
         .act-text strong { color: var(--gold-bright); }
         .act-text .skill { color: #b6e6b6; font-weight: 600; }
         .act-time { color: var(--text-dim); font-size: 0.82rem; white-space: nowrap; }
-        .act-empty {
-            color: var(--text-dim);
-            font-style: italic;
-            text-align: center;
-            padding: 20px;
-            font-size: 0.92rem;
-        }
+        .act-empty { color: var(--text-dim); font-style: italic; text-align: center; padding: 20px; font-size: 0.92rem; }
 
         /* ---- Spillerkort ---- */
-        .cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
-        }
+        .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
         .card {
-            background: var(--panel);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 8px 24px -12px rgba(0,0,0,0.6);
+            background: var(--panel); border: 1px solid var(--border);
+            border-radius: 10px; overflow: hidden; box-shadow: 0 8px 24px -12px rgba(0,0,0,0.6);
         }
-        .card-head {
-            background: var(--panel-light);
-            padding: 18px 20px;
-            border-bottom: 2px solid var(--gold);
-        }
-        .card-name {
-            font-family: 'Cinzel', serif;
-            font-weight: 700;
-            font-size: 1.25rem;
-            color: var(--gold-bright);
-        }
+        .card-head { background: var(--panel-light); padding: 18px 20px; border-bottom: 2px solid var(--gold); }
+        .card-name { font-family: 'Cinzel', serif; font-weight: 700; font-size: 1.25rem; color: var(--gold-bright); }
         .card-total { color: var(--text-dim); font-size: 0.9rem; margin-top: 2px; }
         .card-total strong { color: var(--text); font-size: 1.05rem; }
 
         .skills { padding: 8px 0; }
         .skill-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 7px 20px;
-            font-size: 0.9rem;
-            border-bottom: 1px solid rgba(74,60,40,0.3);
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 7px 20px; font-size: 0.9rem; border-bottom: 1px solid rgba(74,60,40,0.3);
         }
         .skill-row:last-child { border-bottom: none; }
         .skill-name { color: var(--text-dim); }
-        .skill-level {
-            font-weight: 700;
-            font-variant-numeric: tabular-nums;
-            color: var(--text);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
+        .skill-level { font-weight: 700; font-variant-numeric: tabular-nums; color: var(--text); display: flex; align-items: center; gap: 6px; }
         .skill-row.leader { background: linear-gradient(90deg, var(--leader-glow), transparent); }
         .skill-row.leader .skill-level { color: #b6e6b6; }
         .crown { font-size: 0.85rem; }
 
         .total-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 10px 20px;
-            background: rgba(212,175,55,0.06);
-            font-weight: 700;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 10px 20px; background: rgba(212,175,55,0.06); font-weight: 700;
         }
         .total-row.leader { background: linear-gradient(90deg, var(--leader-glow), transparent); }
         .total-row .skill-name { color: var(--gold); }
 
+        /* ---- Sjekklister (egen tab) ---- */
+        .check-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+        .check-card {
+            background: var(--panel); border: 1px solid var(--border);
+            border-radius: 10px; overflow: hidden; box-shadow: 0 8px 24px -12px rgba(0,0,0,0.6);
+        }
+        .check-card-head {
+            background: var(--panel-light); padding: 16px 20px;
+            border-bottom: 2px solid var(--gold);
+            font-family: 'Cinzel', serif; font-weight: 700; font-size: 1.2rem; color: var(--gold-bright);
+        }
+        .check-body { padding: 10px 0; }
+        .check-row {
+            display: flex; align-items: baseline; gap: 10px;
+            padding: 10px 20px; font-size: 0.95rem;
+            border-bottom: 1px solid rgba(74,60,40,0.3);
+        }
+        .check-row:last-child { border-bottom: none; }
+        .check-num { color: var(--text-dim); font-variant-numeric: tabular-nums; min-width: 22px; }
+        .check-task { flex: 1; color: var(--text); }
+        .check-row.done .check-task { text-decoration: line-through; color: var(--text-dim); }
+        .check-mark { font-size: 0.9rem; }
+        .check-empty { color: var(--text-dim); font-style: italic; padding: 16px 20px; font-size: 0.9rem; }
+        .check-progress {
+            padding: 10px 20px; font-size: 0.82rem; color: var(--text-dim);
+            border-top: 1px solid rgba(74,60,40,0.3); background: rgba(0,0,0,0.12);
+        }
+        .check-hint {
+            text-align: center; color: var(--text-dim); font-size: 0.85rem;
+            font-style: italic; margin-top: 24px;
+        }
+        .check-hint code {
+            background: var(--panel-light); padding: 2px 7px; border-radius: 4px;
+            color: var(--gold); font-size: 0.85rem;
+        }
+
         .error { padding: 30px 20px; text-align: center; color: #d88; font-size: 0.9rem; }
         .loading { text-align: center; padding: 80px 20px; color: var(--text-dim); font-size: 1.1rem; }
-
-        .section-label {
-            font-family: 'Cinzel', serif;
-            font-size: 1.5rem;
-            color: var(--gold);
-            margin: 0 0 18px;
-        }
     </style>
 </head>
 <body>
@@ -278,36 +251,60 @@
     </div>
 </header>
 
+<!-- Tabs -->
+<div class="tabs">
+    <button class="tab active" onclick="showTab('stats', this)">Stats</button>
+    <button class="tab" onclick="showTab('leaderboard', this)">Leaderboard</button>
+    <button class="tab" onclick="showTab('activity', this)">Aktivitet</button>
+    <button class="tab" onclick="showTab('checklist', this)">Sjekklister</button>
+</div>
+
 <div class="wrap">
-    <!-- Leaderboard -->
-    <div class="leaderboard">
-        <div class="lb-head">
-            <div class="lb-title">🏆 XP-leaderboard</div>
-            <div class="lb-tabs">
-                <button class="lb-tab active" onclick="setPeriod('week', this)">Denne uken</button>
-                <button class="lb-tab" onclick="setPeriod('month', this)">Denne måneden</button>
+    <!-- Stats-tab -->
+    <div class="panel active" id="panel-stats">
+        <div id="content" class="loading">Henter stats...</div>
+    </div>
+
+    <!-- Leaderboard-tab -->
+    <div class="panel" id="panel-leaderboard">
+        <div class="leaderboard">
+            <div class="lb-head">
+                <div class="lb-title">🏆 XP-leaderboard</div>
+                <div class="lb-tabs">
+                    <button class="lb-tab active" onclick="setPeriod('week', this)">Denne uken</button>
+                    <button class="lb-tab" onclick="setPeriod('month', this)">Denne måneden</button>
+                </div>
+            </div>
+            <div class="lb-rows" id="lbRows">
+                <div class="loading" style="padding: 30px;">Laster...</div>
+            </div>
+            <div class="lb-note">
+                Uken regnes fra mandag, måneden fra den 1. XP-gevinsten nullstilles ved
+                hver ny periode og bygger seg opp etter hvert som dere spiller.
             </div>
         </div>
-        <div class="lb-rows" id="lbRows">
-            <div class="loading" style="padding: 30px;">Laster...</div>
-        </div>
-        <div class="lb-note">
-            Uken regnes fra mandag, måneden fra den 1. XP nullstilles ved
-            hver ny periode og bygger seg opp etter hvert vi spiller.
+    </div>
+
+    <!-- Aktivitet-tab -->
+    <div class="panel" id="panel-activity">
+        <div class="activity">
+            <div class="activity-title">📜 Siste hendelser</div>
+            <div class="act-rows" id="actRows">
+                <div class="act-empty">Laster...</div>
+            </div>
         </div>
     </div>
 
-    <!-- Aktivitetslogg: de 10 siste level-ups -->
-    <div class="activity">
-        <div class="activity-title">📜 Siste hendelser</div>
-        <div class="act-rows" id="actRows">
-            <div class="act-empty">Laster...</div>
+    <!-- Sjekkliste-tab -->
+    <div class="panel" id="panel-checklist">
+        <div class="check-cards" id="checkCards">
+            <div class="loading" style="padding: 40px;">Laster sjekklister...</div>
+        </div>
+        <div class="check-hint">
+            Oppgaver styres via Discord: <code>!LaksenGI add level 62 construction</code>,
+            <code>!LaksenGI complete 1</code>, <code>!LaksenGI delete 1</code>
         </div>
     </div>
-
-    <!-- Spillerkort -->
-    <h2 class="section-label">Stats</h2>
-    <div id="content" class="loading">Henter stats...</div>
 </div>
 
 <script>
@@ -315,53 +312,55 @@
     const LB_API = '/api/leaderboard';
     const ACTIVITY_API = '/api/activity';
     const REFRESH_API = '/api/refresh';
-    let currentPeriod = 'week';   // "week" eller "month"
-
-    const STATUS_LABELS = {};  // ikke brukt her, men holder ting trygt om utvidet
+    const CHECKLIST_API = '/api/checklist';
+    const ACCOUNTS = ['GIM Jostein', 'LaksenGI', 'MagickinderG'];
+    let currentPeriod = 'week';
 
     document.addEventListener('DOMContentLoaded', () => {
         loadStats();
         loadLeaderboard();
         loadActivity();
+        loadAllChecklists();
     });
 
-    // "Oppdater"-knappen: lager et snapshot (caches i 10 min mot spam),
-    // og henter så inn oppdaterte stats, leaderboard og hendelser.
+    // Bytt mellom tabs
+    function showTab(name, btn) {
+        document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.getElementById('panel-' + name).classList.add('active');
+        btn.classList.add('active');
+    }
+
+    // "Oppdater": lager ferskt snapshot (caches 10 min), henter så alt på nytt
     async function refreshAll() {
         const btn = document.querySelector('.controls button');
         if (btn) { btn.disabled = true; btn.textContent = '↻ Oppdaterer...'; }
-
         try {
             await fetch(REFRESH_API, { method: 'POST' });
-        } catch (e) {
-            // selv om refresh feiler, viser vi det vi har
-        }
-
+        } catch (e) {}
         await loadStats();
         await loadLeaderboard();
         await loadActivity();
-
+        await loadAllChecklists();
         if (btn) { btn.disabled = false; btn.textContent = '↻ Oppdater'; }
     }
 
-    // Henter de 5 siste level-up-hendelsene og viser dem i aktivitetsboksen.
+    /* ---------- Aktivitet ---------- */
     async function loadActivity() {
         const rows = document.getElementById('actRows');
         try {
             const res = await fetch(ACTIVITY_API);
             if (!res.ok) throw new Error('Kunne ikke hente hendelser');
-            const events = await res.json();
-            renderActivity(events);
+            renderActivity(await res.json());
         } catch (err) {
             rows.innerHTML = `<div class="act-empty">Feil: ${err.message}</div>`;
         }
     }
-
     function renderActivity(events) {
         const rows = document.getElementById('actRows');
         if (!events.length) {
             rows.innerHTML = '<div class="act-empty">Ingen hendelser ennå. ' +
-                'Når noen i gruppa går opp et nivå, dukker det opp her.</div>';
+                'Når noen i gruppen går opp et nivå, dukker det opp her.</div>';
             return;
         }
         rows.innerHTML = events.map(e => `
@@ -372,11 +371,8 @@
           ${e.newLevel} i <span class="skill">${escapeHtml(e.skill)}</span>
         </span>
         <span class="act-time">${formatTime(e.happenedAt)}</span>
-      </div>
-    `).join('');
+      </div>`).join('');
     }
-
-    // Gjør et tidsstempel om til noe lesbart, f.eks. "for 2 t siden"
     function formatTime(iso) {
         const then = new Date(iso);
         const diffMin = Math.floor((Date.now() - then.getTime()) / 60000);
@@ -384,10 +380,10 @@
         if (diffMin < 60) return `for ${diffMin} min siden`;
         const diffH = Math.floor(diffMin / 60);
         if (diffH < 24) return `for ${diffH} t siden`;
-        const diffD = Math.floor(diffH / 24);
-        return `for ${diffD} d siden`;
+        return `for ${Math.floor(diffH / 24)} d siden`;
     }
 
+    /* ---------- Stats ---------- */
     async function loadStats() {
         const content = document.getElementById('content');
         content.className = 'loading';
@@ -395,8 +391,7 @@
         try {
             const res = await fetch(STATS_API);
             if (!res.ok) throw new Error('Kunne ikke hente stats');
-            const players = await res.json();
-            renderCards(players);
+            renderCards(await res.json());
             document.getElementById('updated').textContent =
                 'Oppdatert ' + new Date().toLocaleTimeString('no-NO');
         } catch (err) {
@@ -404,47 +399,8 @@
             content.innerHTML = 'Feil ved henting: ' + err.message;
         }
     }
-
-    async function loadLeaderboard() {
-        const rows = document.getElementById('lbRows');
-        try {
-            const res = await fetch(`${LB_API}?period=${currentPeriod}`);
-            if (!res.ok) throw new Error('Kunne ikke hente leaderboard');
-            const entries = await res.json();
-            renderLeaderboard(entries);
-        } catch (err) {
-            rows.innerHTML = `<div class="error">Feil: ${err.message}</div>`;
-        }
-    }
-
-    function setPeriod(period, btn) {
-        currentPeriod = period;
-        document.querySelectorAll('.lb-tab').forEach(t => t.classList.remove('active'));
-        btn.classList.add('active');
-        loadLeaderboard();
-    }
-
-    function renderLeaderboard(entries) {
-        const rows = document.getElementById('lbRows');
-        if (!entries.length) {
-            rows.innerHTML = '<div class="error">Ingen data ennå.</div>';
-            return;
-        }
-        rows.innerHTML = entries.map((e, i) => `
-      <div class="lb-row ${i === 0 && e.xpGained > 0 ? 'first' : ''}">
-        <div class="lb-rank">${i + 1}</div>
-        <div class="lb-name">${escapeHtml(e.username)}</div>
-        <div class="lb-xp ${e.xpGained === 0 ? 'zero' : ''}">
-          ${e.xpGained > 0 ? '+' : ''}${e.xpGained.toLocaleString('no-NO')} XP
-        </div>
-      </div>
-    `).join('');
-    }
-
     function renderCards(players) {
         const content = document.getElementById('content');
-
-        // Finn hvem som leder i hver ferdighet
         const leaders = {};
         players.forEach(p => {
             if (!p.found) return;
@@ -455,46 +411,104 @@
                 }
             });
         });
-
         content.className = '';
         content.innerHTML = '<div class="cards">' +
             players.map(p => card(p, leaders)).join('') + '</div>';
     }
-
     function card(p, leaders) {
         if (!p.found) {
-            return `
-        <div class="card">
-          <div class="card-head"><div class="card-name">${escapeHtml(p.username)}</div></div>
-          <div class="error">Fant ingen stats for denne kontoen.<br>Sjekk at navnet er riktig.</div>
-        </div>`;
+            return `<div class="card">
+        <div class="card-head"><div class="card-name">${escapeHtml(p.username)}</div></div>
+        <div class="error">Fant ingen stats for denne kontoen.</div></div>`;
         }
-
         const overall = p.skills.find(s => s.name === 'Overall');
         const rest = p.skills.filter(s => s.name !== 'Overall');
         const overallLeader = leaders['Overall'] && leaders['Overall'].player === p.username;
-
         const rows = rest.map(s => {
             const isLeader = leaders[s.name] && leaders[s.name].player === p.username;
-            return `
-        <div class="skill-row ${isLeader ? 'leader' : ''}">
-          <span class="skill-name">${s.name}</span>
-          <span class="skill-level">${isLeader ? '<span class="crown">👑</span>' : ''}${s.level}</span>
-        </div>`;
-        }).join('');
-
-        return `
-      <div class="card">
-        <div class="card-head">
-          <div class="card-name">${escapeHtml(p.username)}</div>
-          <div class="card-total">Totalnivå: <strong>${overall ? overall.level : '–'}</strong></div>
-        </div>
-        <div class="total-row ${overallLeader ? 'leader' : ''}">
-          <span class="skill-name">Total XP</span>
-          <span class="skill-level">${overallLeader ? '<span class="crown">👑</span>' : ''}${overall ? overall.xp.toLocaleString('no-NO') : '–'}</span>
-        </div>
-        <div class="skills">${rows}</div>
+            return `<div class="skill-row ${isLeader ? 'leader' : ''}">
+        <span class="skill-name">${s.name}</span>
+        <span class="skill-level">${isLeader ? '<span class="crown">👑</span>' : ''}${s.level}</span>
       </div>`;
+        }).join('');
+        return `<div class="card">
+      <div class="card-head">
+        <div class="card-name">${escapeHtml(p.username)}</div>
+        <div class="card-total">Totalnivå: <strong>${overall ? overall.level : '–'}</strong></div>
+      </div>
+      <div class="total-row ${overallLeader ? 'leader' : ''}">
+        <span class="skill-name">Total XP</span>
+        <span class="skill-level">${overallLeader ? '<span class="crown">👑</span>' : ''}${overall ? overall.xp.toLocaleString('no-NO') : '–'}</span>
+      </div>
+      <div class="skills">${rows}</div>
+    </div>`;
+    }
+
+    /* ---------- Leaderboard ---------- */
+    async function loadLeaderboard() {
+        const rows = document.getElementById('lbRows');
+        try {
+            const res = await fetch(`${LB_API}?period=${currentPeriod}`);
+            if (!res.ok) throw new Error('Kunne ikke hente leaderboard');
+            renderLeaderboard(await res.json());
+        } catch (err) {
+            rows.innerHTML = `<div class="error">Feil: ${err.message}</div>`;
+        }
+    }
+    function setPeriod(period, btn) {
+        currentPeriod = period;
+        document.querySelectorAll('.lb-tab').forEach(t => t.classList.remove('active'));
+        btn.classList.add('active');
+        loadLeaderboard();
+    }
+    function renderLeaderboard(entries) {
+        const rows = document.getElementById('lbRows');
+        if (!entries.length) { rows.innerHTML = '<div class="error">Ingen data ennå.</div>'; return; }
+        rows.innerHTML = entries.map((e, i) => `
+      <div class="lb-row ${i === 0 && e.xpGained > 0 ? 'first' : ''}">
+        <div class="lb-rank">${i + 1}</div>
+        <div class="lb-name">${escapeHtml(e.username)}</div>
+        <div class="lb-xp ${e.xpGained === 0 ? 'zero' : ''}">
+          ${e.xpGained > 0 ? '+' : ''}${e.xpGained.toLocaleString('no-NO')} XP
+        </div>
+      </div>`).join('');
+    }
+
+    /* ---------- Sjekklister ---------- */
+    async function loadAllChecklists() {
+        const container = document.getElementById('checkCards');
+        try {
+            // Hent alle tre listene parallelt
+            const results = await Promise.all(ACCOUNTS.map(async name => {
+                const res = await fetch(CHECKLIST_API + '/' + encodeURIComponent(name));
+                const items = res.ok ? await res.json() : [];
+                return { name, items };
+            }));
+            container.innerHTML = results.map(checkCard).join('');
+        } catch (err) {
+            container.innerHTML = `<div class="error">Kunne ikke laste sjekklister: ${err.message}</div>`;
+        }
+    }
+    function checkCard({ name, items }) {
+        let body;
+        if (!items.length) {
+            body = '<div class="check-empty">Ingen mål lagt til ennå.</div>';
+        } else {
+            body = items.map((it, i) => `
+        <div class="check-row ${it.completed ? 'done' : ''}">
+          <span class="check-num">${i + 1}.</span>
+          <span class="check-task">${escapeHtml(it.task)}</span>
+          ${it.completed ? '<span class="check-mark">✅</span>' : ''}
+        </div>`).join('');
+        }
+        const done = items.filter(it => it.completed).length;
+        const progress = items.length
+            ? `<div class="check-progress">${done} av ${items.length} fullført</div>` : '';
+        return `<div class="check-card">
+      <div class="check-card-head">${escapeHtml(name)}</div>
+      <div class="check-body">${body}</div>
+      ${progress}
+    </div>`;
     }
 
     function escapeHtml(str) {

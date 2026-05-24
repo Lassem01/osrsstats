@@ -17,7 +17,6 @@ public class HiscoreController {
     private final LeaderboardService leaderboardService;
     private final LevelUpRepository levelUpRepository;
 
-    // Spring sender inn alle tre automatisk (dependency injection)
     public HiscoreController(HiscoreService service,
                              LeaderboardService leaderboardService,
                              LevelUpRepository levelUpRepository) {
@@ -34,16 +33,24 @@ public class HiscoreController {
                 .toList();
     }
 
-    // GET /api/leaderboard?days=7 → XP-gevinst per spiller de siste X dagene
-    @GetMapping("/leaderboard")
-    public List<LeaderboardService.GainEntry> getLeaderboard(
-            @RequestParam(defaultValue = "7") int days) {
-        return leaderboardService.getLeaderboard(ACCOUNTS, days);
+    @PostMapping("/refresh")
+    public List<PlayerStats> refresh() {
+        return ACCOUNTS.stream()
+                .map(service::getStatsAndSave)
+                .toList();
     }
 
-    // GET /api/activity → de 5 siste level-up-hendelsene
+    // GET /api/leaderboard?days=7 → XP-gevinst per spiller de siste X dagene
+    // GET /api/leaderboard?period=week  (eller period=month)
+    @GetMapping("/leaderboard")
+    public List<LeaderboardService.GainEntry> getLeaderboard(
+            @RequestParam(defaultValue = "week") String period) {
+        return leaderboardService.getLeaderboard(ACCOUNTS, period);
+    }
+
+    // GET /api/activity → de 10 siste level-up-hendelsene
     @GetMapping("/activity")
     public List<LevelUpEvent> getActivity() {
-        return levelUpRepository.findTop5ByOrderByHappenedAtDesc();
+        return levelUpRepository.findTop10ByOrderByHappenedAtDesc();
     }
 }

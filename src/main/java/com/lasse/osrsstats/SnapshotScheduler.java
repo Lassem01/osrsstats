@@ -19,8 +19,8 @@ public class SnapshotScheduler {
         this.service = service;
     }
 
-    // Kjører hver 6. time: kl. 00:00, 06:00, 12:00 og 18:00.
-    @Scheduled(cron = "0 0 0,6,12,18 * * *")
+    // Kjører hver 6. time: kl. 01:00, 07:00, 13:00 og 19:00.
+    @Scheduled(cron = "0 0 1,7,13,19 * * *")
     public void takeDailySnapshot() {
         for (String account : ACCOUNTS) {
             service.getStatsAndSave(account);

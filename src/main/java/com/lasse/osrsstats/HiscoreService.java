@@ -56,7 +56,9 @@ public class HiscoreService {
     }
 
     // Henter ferske stats, lagrer et snapshot, og oppdager eventuelle level-ups.
-    // Det er denne scheduleren kaller.
+    // @Cacheable her gjør at gjentatte kall innen 10 min ikke lager nye snapshots
+    // eller treffer Jagex – det fungerer som en spam-sperre for "Oppdater"-knappen.
+    @Cacheable("statsAndSave")
     public PlayerStats getStatsAndSave(String username) {
         PlayerStats stats = getStats(username);
 

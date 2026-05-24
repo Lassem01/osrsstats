@@ -80,6 +80,7 @@
             transition: background 0.2s, border-color 0.2s;
         }
         button:hover { background: var(--border); border-color: var(--gold); }
+        button:disabled { opacity: 0.6; cursor: default; }
         .updated { color: var(--text-dim); font-size: 0.85rem; }
 
         .wrap {
@@ -112,10 +113,7 @@
             color: var(--gold-bright);
         }
         .lb-tabs { display: flex; gap: 8px; }
-        .lb-tab {
-            padding: 7px 16px;
-            font-size: 0.88rem;
-        }
+        .lb-tab { padding: 7px 16px; font-size: 0.88rem; }
         .lb-tab.active {
             background: var(--gold);
             color: var(--bg);
@@ -275,6 +273,7 @@
     <h1>Mattox</h1>
     <div class="badge-gim">⚔ Group Ironman</div>
     <div class="controls">
+        <button onclick="refreshAll()">↻ Oppdater</button>
         <span class="updated" id="updated"></span>
     </div>
 </header>
@@ -285,16 +284,16 @@
         <div class="lb-head">
             <div class="lb-title">🏆 XP-leaderboard</div>
             <div class="lb-tabs">
-                <button class="lb-tab active" data-days="7" onclick="setPeriod(7, this)">Denne uken</button>
-                <button class="lb-tab" data-days="30" onclick="setPeriod(30, this)">Denne måneden</button>
+                <button class="lb-tab active" onclick="setPeriod('week', this)">Denne uka</button>
+                <button class="lb-tab" onclick="setPeriod('month', this)">Denne måneden</button>
             </div>
         </div>
         <div class="lb-rows" id="lbRows">
             <div class="loading" style="padding: 30px;">Laster...</div>
         </div>
         <div class="lb-note">
-            Stats hentes automatisk hver 6. time. XP-gevinsten regnes ut fra disse
-            målingene og blir mer presis etter hvert som dagene går.
+            Uka regnes fra mandag, måneden fra den 1. XP-gevinsten nullstilles ved
+            hver ny periode og bygger seg opp etter hvert som dere spiller.
         </div>
     </div>
 
@@ -315,13 +314,35 @@
     const STATS_API = '/api/stats';
     const LB_API = '/api/leaderboard';
     const ACTIVITY_API = '/api/activity';
-    let currentDays = 7;
+    const REFRESH_API = '/api/refresh';
+    let currentPeriod = 'week';   // "week" eller "month"
+
+    const STATUS_LABELS = {};  // ikke brukt her, men holder ting trygt om utvidet
 
     document.addEventListener('DOMContentLoaded', () => {
         loadStats();
         loadLeaderboard();
         loadActivity();
     });
+
+    // "Oppdater"-knappen: lager et ferskt snapshot (caches i 10 min mot spam),
+    // og henter så inn oppdaterte stats, leaderboard og hendelser.
+    async function refreshAll() {
+        const btn = document.querySelector('.controls button');
+        if (btn) { btn.disabled = true; btn.textContent = '↻ Oppdaterer...'; }
+
+        try {
+            await fetch(REFRESH_API, { method: 'POST' });
+        } catch (e) {
+            // selv om refresh feiler, viser vi det vi har
+        }
+
+        await loadStats();
+        await loadLeaderboard();
+        await loadActivity();
+
+        if (btn) { btn.disabled = false; btn.textContent = '↻ Oppdater'; }
+    }
 
     // Henter de 5 siste level-up-hendelsene og viser dem i aktivitetsboksen.
     async function loadActivity() {
@@ -355,7 +376,7 @@
     `).join('');
     }
 
-    // Gjør et tidsstempel om til noe lesbart, f.eks. "for 2 timer siden"
+    // Gjør et tidsstempel om til noe lesbart, f.eks. "for 2 t siden"
     function formatTime(iso) {
         const then = new Date(iso);
         const diffMin = Math.floor((Date.now() - then.getTime()) / 60000);
@@ -387,7 +408,7 @@
     async function loadLeaderboard() {
         const rows = document.getElementById('lbRows');
         try {
-            const res = await fetch(`${LB_API}?days=${currentDays}`);
+            const res = await fetch(`${LB_API}?period=${currentPeriod}`);
             if (!res.ok) throw new Error('Kunne ikke hente leaderboard');
             const entries = await res.json();
             renderLeaderboard(entries);
@@ -396,8 +417,8 @@
         }
     }
 
-    function setPeriod(days, btn) {
-        currentDays = days;
+    function setPeriod(period, btn) {
+        currentPeriod = period;
         document.querySelectorAll('.lb-tab').forEach(t => t.classList.remove('active'));
         btn.classList.add('active');
         loadLeaderboard();

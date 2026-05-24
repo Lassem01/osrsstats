@@ -2,8 +2,8 @@ package com.lasse.osrsstats;
 
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
+import java.time.*;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -18,21 +18,35 @@ public class LeaderboardService {
         this.repository = repository;
     }
 
-    // Et enkelt resultat per spiller: navn + hvor mye XP de har fått i perioden
     public record GainEntry(String username, long xpGained) {}
 
-    // Regner ut XP-gevinst for hver spiller de siste X dagene.
-    // 7 dager = uke, ~30 dager = måned.
-    public List<GainEntry> getLeaderboard(List<String> usernames, int days) {
-        Instant since = Instant.now().minus(days, ChronoUnit.DAYS);
+    // Norsk tidssone, så "mandag" og "1. i måneden" regnes riktig for dere
+    private static final ZoneId ZONE = ZoneId.of("Europe/Oslo");
+
+    // Startpunktet for "denne uka": siste mandag kl. 00:00
+    private Instant startOfWeek() {
+        LocalDate monday = LocalDate.now(ZONE)
+                .with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+        return monday.atStartOfDay(ZONE).toInstant();
+    }
+
+    // Startpunktet for "denne måneden": den 1. kl. 00:00
+    private Instant startOfMonth() {
+        LocalDate first = LocalDate.now(ZONE).withDayOfMonth(1);
+        return first.atStartOfDay(ZONE).toInstant();
+    }
+
+    // period = "week" eller "month"
+    public List<GainEntry> getLeaderboard(List<String> usernames, String period) {
+        Instant since = period.equals("month") ? startOfMonth() : startOfWeek();
         List<GainEntry> result = new ArrayList<>();
 
         for (String username : usernames) {
-            // "Nå"-verdien: det aller nyeste snapshotet
+            // Nyeste snapshot = "nå"-verdien
             Optional<Snapshot> latest =
                     repository.findFirstByUsernameOrderByTakenAtDesc(username);
 
-            // "Før"-verdien: det første snapshotet innenfor perioden
+            // Første snapshot etter periodestart = "før"-verdien
             Optional<Snapshot> earliest =
                     repository.findFirstByUsernameAndTakenAtAfterOrderByTakenAtAsc(username, since);
 
@@ -40,12 +54,10 @@ public class LeaderboardService {
                 long gained = latest.get().getTotalXp() - earliest.get().getTotalXp();
                 result.add(new GainEntry(username, gained));
             } else {
-                // Ikke nok data ennå – vis 0 så spilleren fortsatt dukker opp
                 result.add(new GainEntry(username, 0));
             }
         }
 
-        // Sorter slik at den med mest XP-gevinst kommer øverst
         result.sort(Comparator.comparingLong(GainEntry::xpGained).reversed());
         return result;
     }

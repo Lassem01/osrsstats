@@ -20,7 +20,7 @@ public class LeaderboardService {
 
     public record GainEntry(String username, long xpGained) {}
 
-    // Norsk tidssone, så "mandag" og "1. i måneden" regnes riktig for dere
+    // Norsk tidssone, så "mandag" og "1. i måneden"
     private static final ZoneId ZONE = ZoneId.of("Europe/Oslo");
 
     // Startpunktet for "denne uka": siste mandag kl. 00:00

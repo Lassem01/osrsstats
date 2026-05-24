@@ -3,7 +3,7 @@ package com.lasse.osrsstats;
 import jakarta.persistence.*;
 import java.time.Instant;
 
-// Én registrert level-up: hvem, hvilken ferdighet, til hvilket nivå, og når.
+// En registrert level-up: hvem, hvilken ferdighet, til hvilket nivå, og når.
 @Entity
 public class LevelUpEvent {
 

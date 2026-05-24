@@ -55,7 +55,7 @@ public class HiscoreService {
         }
     }
 
-    // Henter ferske stats, lagrer et snapshot, og oppdager eventuelle level-ups.
+    // oppdaterer tall, lagrer et snapshot, og oppdager eventuelle level-ups.
     // @Cacheable her gjør at gjentatte kall innen 10 min ikke lager nye snapshots
     // eller treffer Jagex – det fungerer som en spam-sperre for "Oppdater"-knappen.
     @Cacheable("statsAndSave")
@@ -70,7 +70,7 @@ public class HiscoreService {
                     .orElse(null);
 
             if (overall != null) {
-                // Bygg en tekststreng med alle ferdighetsnivåer (unntatt Overall),
+                // Bygger en tekststreng med alle ferdighetsnivåer (unntatt Overall),
                 // f.eks. "Attack:80,Defence:75,Strength:85,..."
                 String skillLevels = stats.skills().stream()
                         .filter(s -> !s.name().equals("Overall"))
@@ -95,7 +95,7 @@ public class HiscoreService {
         String[] lines = body.split("\n");
         List<Skill> skills = new ArrayList<>();
 
-        // Vi tar de første 24 linjene (totalnivå + 23 ferdigheter)
+
         for (int i = 0; i < SKILL_NAMES.size() && i < lines.length; i++) {
             // Hver linje ser ut som "rank,level,xp"
             String[] parts = lines[i].trim().split(",");

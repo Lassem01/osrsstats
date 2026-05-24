@@ -284,7 +284,7 @@
         <div class="lb-head">
             <div class="lb-title">🏆 XP-leaderboard</div>
             <div class="lb-tabs">
-                <button class="lb-tab active" onclick="setPeriod('week', this)">Denne uka</button>
+                <button class="lb-tab active" onclick="setPeriod('week', this)">Denne uken</button>
                 <button class="lb-tab" onclick="setPeriod('month', this)">Denne måneden</button>
             </div>
         </div>
@@ -292,12 +292,12 @@
             <div class="loading" style="padding: 30px;">Laster...</div>
         </div>
         <div class="lb-note">
-            Uka regnes fra mandag, måneden fra den 1. XP-gevinsten nullstilles ved
-            hver ny periode og bygger seg opp etter hvert som dere spiller.
+            Uken regnes fra mandag, måneden fra den 1. XP nullstilles ved
+            hver ny periode og bygger seg opp etter hvert vi spiller.
         </div>
     </div>
 
-    <!-- Aktivitetslogg: de 5 siste level-ups -->
+    <!-- Aktivitetslogg: de 10 siste level-ups -->
     <div class="activity">
         <div class="activity-title">📜 Siste hendelser</div>
         <div class="act-rows" id="actRows">
@@ -325,7 +325,7 @@
         loadActivity();
     });
 
-    // "Oppdater"-knappen: lager et ferskt snapshot (caches i 10 min mot spam),
+    // "Oppdater"-knappen: lager et snapshot (caches i 10 min mot spam),
     // og henter så inn oppdaterte stats, leaderboard og hendelser.
     async function refreshAll() {
         const btn = document.querySelector('.controls button');

@@ -21,7 +21,7 @@ public class HiscoreService {
             "Overall", "Attack", "Defence", "Strength", "Hitpoints", "Ranged",
             "Prayer", "Magic", "Cooking", "Woodcutting", "Fletching", "Fishing",
             "Firemaking", "Crafting", "Smithing", "Mining", "Herblore", "Agility",
-            "Thieving", "Slayer", "Farming", "Runecraft", "Hunter", "Construction"
+            "Thieving", "Slayer", "Farming", "Runecraft", "Hunter", "Construction, Sailing"
     );
 
     // RestClient er Spring sitt verktøy for å gjøre HTTP-kall til andre tjenester.

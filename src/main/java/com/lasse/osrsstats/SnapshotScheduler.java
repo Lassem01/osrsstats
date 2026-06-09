@@ -19,13 +19,13 @@ public class SnapshotScheduler {
         this.service = service;
     }
 
-    // Kjører kl. 01:00 UTC – én gang i døgnet.
-    @Scheduled(cron = "0 0 1 * * *")
+    // Kjører hver 6. time: kl. 01:00, 07:00, 13:00 og 19:00.
+    @Scheduled(cron = "0 0 1,7,13,19 * * *")
     public void takeDailySnapshot() {
         for (String account : ACCOUNTS) {
             service.getStatsAndSave(account);
         }
-        System.out.println("Snapshot lagret for " + ACCOUNTS.size() + " kontoer.");
+        System.out.println("Daglig snapshot lagret for " + ACCOUNTS.size() + " kontoer.");
     }
     @org.springframework.cache.annotation.CacheEvict(value = "playerStats", allEntries = true)
     @Scheduled(fixedRate = 600000)   // 600000 ms = 10 minutter

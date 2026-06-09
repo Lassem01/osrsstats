@@ -90,22 +90,36 @@ public class HiscoreService {
         return stats;
     }
 
-    // Gjør CSV-teksten fra Jagex om til en liste av Skill-objekter.
     private PlayerStats parse(String username, String body) {
+        // Hvis svaret er tomt eller åpenbart ikke CSV (f.eks. HTML-feilside),
+        // si fra ved å returnere "ikke funnet" frontend kan da vise riktig melding.
+        if (body == null || body.isBlank() || body.trim().startsWith("<")) {
+            return new PlayerStats(username, false, List.of());
+        }
+
         String[] lines = body.split("\n");
         List<Skill> skills = new ArrayList<>();
 
-
         for (int i = 0; i < SKILL_NAMES.size() && i < lines.length; i++) {
-            // Hver linje ser ut som "rank,level,xp"
             String[] parts = lines[i].trim().split(",");
             if (parts.length >= 3) {
-                long rank = Long.parseLong(parts[0]);
-                int level = Integer.parseInt(parts[1]);
-                long xp = Long.parseLong(parts[2]);
-                skills.add(new Skill(SKILL_NAMES.get(i), level, xp, rank));
+                try {
+                    long rank = Long.parseLong(parts[0]);
+                    int level = Integer.parseInt(parts[1]);
+                    long xp = Long.parseLong(parts[2]);
+                    skills.add(new Skill(SKILL_NAMES.get(i), level, xp, rank));
+                } catch (NumberFormatException e) {
+                    // Hvis en linje ikke kan parses som tall, hopper vi over.
+                    // Bedre å vise det vi har enn å krasje.
+                }
             }
         }
+
+        // Hvis vi ikke fikk parset noen ferdigheter i det hele tatt, regn det som mislykket
+        if (skills.isEmpty()) {
+            return new PlayerStats(username, false, List.of());
+        }
+
         return new PlayerStats(username, true, skills);
     }
 }

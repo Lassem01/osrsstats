@@ -401,6 +401,20 @@
     }
     function renderCards(players) {
         const content = document.getElementById('content');
+
+        // Hvis ingen av spillerne ble funnet, er sannsynligvis Jagex nede
+        const anyFound = players.some(p => p.found);
+        if (!anyFound) {
+            content.className = 'error';
+            content.innerHTML =
+                '<p style="font-size: 1rem; margin-bottom: 8px;">' +
+                'Får ikke kontakt med OSRS hiscores akkurat nå.</p>' +
+                '<p style="font-size: 0.9rem; color: var(--text-dim);">' +
+                'Jagex sin tjeneste er sannsynligvis under vedlikehold. ' +
+                'Prøv igjen om noen minutter.</p>';
+            return;
+        }
+
         const leaders = {};
         players.forEach(p => {
             if (!p.found) return;
